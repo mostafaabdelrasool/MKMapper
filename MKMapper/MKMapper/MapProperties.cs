@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Reflection;
 
-namespace MKMapper
+namespace xMKMapper
 {
     public class MapProperties
     {
@@ -45,15 +45,17 @@ namespace MKMapper
             object data = null; Type sourceType = SourceObject.GetType();
             excludes = excludes == null ? new List<string>() : excludes;
             //check if source property is object or enumrable
-            DesitnationObject.GetType().GetProperties().ToList().ForEach(x =>
+            DesitnationObject.GetType().GetProperties().Where(x => !excludes.Contains(x.Name.ToLower())).ToList().ForEach(destProp =>
             {
-                if (SourceObject.GetType().GetProperties().Any(a => a.Name.ToLower() == x.Name.ToLower() && !excludes.Contains(a.Name.ToLower())))
+                if (sourceType.GetProperties().Any(a => a.Name.ToLower() == destProp.Name.ToLower()))
                 {
                     var sourceProp = sourceType.GetProperties().
-                    Where(a => a.Name.ToLower() == x.Name.ToLower()).FirstOrDefault();
+                    Where(a => a.Name.ToLower() == destProp.Name.ToLower()).FirstOrDefault();
 
                     var SourceValues = sourceProp.GetValue(SourceObject);
-                    if (sourceProp.PropertyType.IsInterface && SourceValues != null && MapCollection && maxDepth <= 3)
+                    if (sourceProp.PropertyType.IsInterface || (sourceProp.PropertyType.IsGenericType &&
+                              sourceProp.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
+                    && SourceValues != null && MapCollection && maxDepth <= 3)
                     {
                         if (((IEnumerable)SourceValues).Cast<object>().Count() > 0)
                         {
@@ -64,24 +66,24 @@ namespace MKMapper
                             if (!parent[sourceType].Contains(sourceProp.PropertyType.GetGenericArguments()[0].Name) && !parent.Keys.Contains(sourceProp.PropertyType.GetGenericArguments()[0]))
                             {
                                 parent[sourceType].Add(sourceProp.PropertyType.GetGenericArguments()[0].Name);
-                                data = CreateInstance(x, true);
+                                data = CreateInstance(destProp, true);
 
                                 foreach (var item in (IEnumerable)SourceValues)
                                 {
 
                                     data.GetType().GetMethod("Add").Invoke(data,
-                                        new[] { GetProperties(item, Activator.CreateInstance(x.PropertyType.GetGenericArguments()[0])) });
+                                        new[] { GetProperties(item, Activator.CreateInstance(destProp.PropertyType.GetGenericArguments()[0])) });
                                     parent.Remove(sourceProp.PropertyType.GetGenericArguments()[0]);
                                     maxDepth = 0;
                                 }
-                                x.SetValue(DesitnationObject, data);
+                                destProp.SetValue(DesitnationObject, data);
                             }
 
                         }
 
                     }
                     else if (sourceProp.PropertyType.IsClass &&
-                        !sourceProp.PropertyType.Name.Contains("String") && SourceValues != null && MapCollection && maxDepth <= 3
+                        !sourceProp.PropertyType.Name.Contains("String") && SourceValues != null && MapCollection
                         )
                     {
                         if (SourceValues != null)
@@ -94,27 +96,23 @@ namespace MKMapper
                             if (!parent[sourceType].Contains(sourceProp.Name) && !parent.Keys.Contains(sourceProp.PropertyType))
                             {
                                 parent[sourceType].Add(sourceProp.Name);
-                                data = CreateInstance(x, false);
+                                data = CreateInstance(destProp, false);
                                 GetProperties(SourceValues, data);
                                 parent.Remove(sourceProp.PropertyType);
                                 maxDepth = 0;
-                                x.SetValue(DesitnationObject, data);
+                                destProp.SetValue(DesitnationObject, data);
                             }
 
                         }
-
-
-
-                        //x.SetValue(DesitnationObject, SetValues(SourceValues, x, false));
                     }
                     else if (!sourceProp.PropertyType.IsClass && !sourceProp.PropertyType.IsInterface ||
                         sourceProp.PropertyType.Name.Contains("String"))
                     {
-                        x.SetValue(DesitnationObject, SourceValues);
+                        destProp.SetValue(DesitnationObject, SourceValues);
                     }
                     else if (!MapCollection)
                     {
-                        x.SetValue(DesitnationObject, null);
+                        destProp.SetValue(DesitnationObject, null);
                     }
                 }
 
