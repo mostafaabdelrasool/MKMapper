@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="InstanceCreation.cs" />
+    <Compile Include="LamdaExtractor.cs" />
     <Compile Include="MapProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

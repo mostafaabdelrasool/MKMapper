@@ -7,9 +7,9 @@ using System.Threading.Tasks;
 
 namespace MKMapper
 {
-    public class InstanceCreator
+    public static class InstanceCreator
     {
-        public object CreateEnumrableInstance(PropertyInfo source)
+        public static object CreateEnumrableInstance(PropertyInfo source)
         {
             object Instance = null;
             if (source!=null)
@@ -25,7 +25,7 @@ namespace MKMapper
 
             return Instance;
         }
-        public object CreateObjectInstance(PropertyInfo source)
+        public static object CreateObjectInstance(PropertyInfo source)
         {
             object Instance = null;
             if (source != null)

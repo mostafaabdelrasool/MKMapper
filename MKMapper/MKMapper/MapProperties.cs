@@ -10,7 +10,6 @@ namespace MKMapper
     {
         public MapProperties()
         {
-            this.instanceCreator = new InstanceCreator();
             this.MapCollection = true;
         }
         /// <summary>
@@ -32,7 +31,7 @@ namespace MKMapper
                 foreach (var item in (IEnumerable)SourceObject)
                 {
                     destType.GetMethod("Add").Invoke(DesitnationObject,
-                        new[] { GetProperties(item, this.instanceCreator.CreateObjectInstance(
+                        new[] { GetProperties(item, InstanceCreator.CreateObjectInstance(
                             destType.GetProperties()[2]), excludes) });
                     MappingPath.Clear();
                 }
@@ -48,7 +47,7 @@ namespace MKMapper
         {
             object data = null; Type sourceType = SourceObject.GetType();
             excludes = excludes == null ? new List<string>() : excludes;
-            //check if source property is object or enumrable
+          
             DesitnationObject.GetType().GetProperties().Where(x => !excludes.Contains(x.Name.ToLower()))
                 .ToList().ForEach(destProp =>
             {
@@ -60,26 +59,36 @@ namespace MKMapper
 
                     var SourceValues = sourceProp.GetValue(SourceObject);
 
-                    //Check if source value is of type list
+                    //Check if source value is of type enumrable
                     if (sourceProp.PropertyType.IsInterface ||
                     (sourceProp.PropertyType.IsGenericType &&
                      sourceProp.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
                     && SourceValues != null && MapCollection)
                     {
                         data = EnumerableAssign(DesitnationObject, destProp, data, sourceType, sourceProp, SourceValues);
-
                     }
+                    //check if source property is object
                     else if (sourceProp.PropertyType.IsClass &&
-                        !sourceProp.PropertyType.Name.Contains("String") && SourceValues != null && MapCollection
-                        )
+                        !sourceProp.PropertyType.Name.Contains("String") && SourceValues != null && MapCollection)
                     {
                         data = ObjectAssing(DesitnationObject, destProp, data, sourceType, sourceProp, SourceValues);
                     }
+                    //check if source property is value type
                     else if (!sourceProp.PropertyType.IsClass && !sourceProp.PropertyType.IsInterface ||
                         sourceProp.PropertyType.Name.Contains("String"))
                     {
-                        var xx = OnAssigning(SourceValues, sourceProp.Name);
-                        destProp.SetValue(DesitnationObject, SourceValues);
+                        if (OnAssigning!=null)
+                        {
+                            var val = OnAssigning(SourceValues, sourceProp.Name, destProp.Name);
+                            if (val!=null)
+                            {
+                                destProp.SetValue(DesitnationObject, val);
+                            }
+                        }
+                        else
+                        {
+                            destProp.SetValue(DesitnationObject, SourceValues);
+                        }
                     }
                     else if (!MapCollection)
                     {
@@ -92,7 +101,8 @@ namespace MKMapper
             return DesitnationObject;
         }
 
-        private object ObjectAssing(object DesitnationObject, PropertyInfo destProp, object data, Type sourceType, PropertyInfo sourceProp, object SourceValues)
+        private object ObjectAssing(object DesitnationObject, PropertyInfo destProp, object data, 
+            Type sourceType, PropertyInfo sourceProp, object SourceValues)
         {
             if (SourceValues != null)
             {
@@ -104,7 +114,7 @@ namespace MKMapper
                 if (!MappingPath[sourceType].Contains(sourceProp.Name) && !MappingPath.Keys.Contains(sourceProp.PropertyType))
                 {
                     MappingPath[sourceType].Add(sourceProp.Name);
-                    data = this.instanceCreator.CreateObjectInstance(destProp);
+                    data = InstanceCreator.CreateObjectInstance(destProp);
                     GetProperties(SourceValues, data);
                     MappingPath.Remove(sourceProp.PropertyType);
                     destProp.SetValue(DesitnationObject, data);
@@ -127,7 +137,7 @@ namespace MKMapper
                 && !MappingPath.Keys.Contains(sourceProp.PropertyType.GetGenericArguments()[0]))
                 {
                     MappingPath[sourceType].Add(sourceProp.PropertyType.GetGenericArguments()[0].Name);
-                    data = this.instanceCreator.CreateEnumrableInstance(destProp);
+                    data = InstanceCreator.CreateEnumrableInstance(destProp);
 
                     foreach (var item in (IEnumerable)SourceValues)
                     {
@@ -146,8 +156,7 @@ namespace MKMapper
 
         public bool MapCollection { get; set; }
         private Dictionary<Type, List<string>> MappingPath = new Dictionary<Type, List<string>>();
-        private InstanceCreator instanceCreator;
-        public Func<object,string,object> OnAssigning { get; set; }
+        public Func<object,string,string,object> OnAssigning { get; set; }
     }
 
 }

@@ -19,7 +19,7 @@ namespace MKMapperTest
                new ObjectMock());
         }
 
-        private object OnAssigning(object data, string name)
+        private object OnAssigning(object data, string name,string parentObject)
         {
             throw new NotImplementedException();
         }
