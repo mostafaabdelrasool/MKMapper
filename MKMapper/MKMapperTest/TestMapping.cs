@@ -15,13 +15,17 @@ namespace MKMapperTest
         {
             MapProperties map = new MapProperties();
             map.OnAssigning = OnAssigning;
-            map.Map<ObjectMock, ObjectMock>(Builder<ObjectMock>.CreateNew().Build(),
+           var xx= map.Map<ObjectMock, ObjectMock>(Builder<ObjectMock>.CreateNew().Build(),
                new ObjectMock());
         }
 
         private object OnAssigning(object data, string name,string parentObject)
         {
-            throw new NotImplementedException();
+            if (name=="prop1")
+            {
+                return 1;
+            }
+            return null;
         }
     }
 }

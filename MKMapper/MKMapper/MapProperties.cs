@@ -47,7 +47,7 @@ namespace MKMapper
         {
             object data = null; Type sourceType = SourceObject.GetType();
             excludes = excludes == null ? new List<string>() : excludes;
-          
+
             DesitnationObject.GetType().GetProperties().Where(x => !excludes.Contains(x.Name.ToLower()))
                 .ToList().ForEach(destProp =>
             {
@@ -77,18 +77,17 @@ namespace MKMapper
                     else if (!sourceProp.PropertyType.IsClass && !sourceProp.PropertyType.IsInterface ||
                         sourceProp.PropertyType.Name.Contains("String"))
                     {
-                        if (OnAssigning!=null)
+
+                        var val = OnAssigning != null ? OnAssigning(SourceValues, sourceProp.Name, destProp.Name) : SourceValues;
+                        if (val != null)
                         {
-                            var val = OnAssigning(SourceValues, sourceProp.Name, destProp.Name);
-                            if (val!=null)
-                            {
-                                destProp.SetValue(DesitnationObject, val);
-                            }
+                            destProp.SetValue(DesitnationObject, Convert.ChangeType(val, sourceProp.PropertyType));
                         }
                         else
                         {
                             destProp.SetValue(DesitnationObject, SourceValues);
                         }
+
                     }
                     else if (!MapCollection)
                     {
@@ -101,7 +100,7 @@ namespace MKMapper
             return DesitnationObject;
         }
 
-        private object ObjectAssing(object DesitnationObject, PropertyInfo destProp, object data, 
+        private object ObjectAssing(object DesitnationObject, PropertyInfo destProp, object data,
             Type sourceType, PropertyInfo sourceProp, object SourceValues)
         {
             if (SourceValues != null)
@@ -156,7 +155,7 @@ namespace MKMapper
 
         public bool MapCollection { get; set; }
         private Dictionary<Type, List<string>> MappingPath = new Dictionary<Type, List<string>>();
-        public Func<object,string,string,object> OnAssigning { get; set; }
+        public Func<object, string, string, object> OnAssigning { get; set; }
     }
 
 }

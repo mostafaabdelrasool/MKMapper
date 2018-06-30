@@ -6,11 +6,7 @@ using System.Threading.Tasks;
 
 namespace MKMapper
 {
-    public class LamdaExtractor
+    internal class LamdaExtractor
     {
-        internal string Extract()
-        {
-
-        }
     }
 }
