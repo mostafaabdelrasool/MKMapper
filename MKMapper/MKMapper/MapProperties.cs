@@ -78,7 +78,13 @@ namespace MKMapper
                         sourceProp.PropertyType.Name.Contains("String"))
                     {
 
-                        var val = OnAssigning != null ? OnAssigning(SourceValues, sourceProp.Name, destProp.Name) : SourceValues;
+                        var val = OnAssigning != null ? OnAssigning(new AssignedProperty
+                        {
+                            SourceName = sourceProp.Name,
+                            PropertyName = destProp.Name,
+                            PropertyType = destProp.PropertyType,
+                            SourceValue = SourceValues
+                        }) : SourceValues;
                         if (val != null)
                         {
                             destProp.SetValue(DesitnationObject, Convert.ChangeType(val, sourceProp.PropertyType));
@@ -155,7 +161,7 @@ namespace MKMapper
 
         public bool MapCollection { get; set; }
         private Dictionary<Type, List<string>> MappingPath = new Dictionary<Type, List<string>>();
-        public Func<object, string, string, object> OnAssigning { get; set; }
+        public Func<AssignedProperty, object> OnAssigning { get; set; }
     }
 
 }

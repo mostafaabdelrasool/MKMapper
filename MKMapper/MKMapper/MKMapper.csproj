@@ -41,6 +41,7 @@
     <Reference Include="System.Xml" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AssigningProperty.cs" />
     <Compile Include="InstanceCreation.cs" />
     <Compile Include="LamdaExtractor.cs" />
     <Compile Include="MapProperties.cs" />
