@@ -88,7 +88,7 @@ namespace MKMapper
                             PropertyName = destProp.Name,
                             PropertyType = destProp.PropertyType,
                             SourceValue = SourceValues
-                        }) : SourceValues;
+                        }) : null;
                         if (val != null)
                         {
                             destProp.SetValue(DesitnationObject, Convert.ChangeType(val, sourceProp.PropertyType));

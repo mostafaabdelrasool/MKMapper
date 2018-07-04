@@ -26,6 +26,13 @@ namespace MKMapperTest
             var xx = map.Map<ObjectMock, ObjectMock3>(Builder<ObjectMock>.CreateNew().Build(),
                 new ObjectMock3());
         }
+        [TestMethod]
+        public void TestWithoutAssign()
+        {
+            MapProperties map = new MapProperties();
+            var xx = map.Map<ObjectMock, ObjectMock3>(Builder<ObjectMock>.CreateNew().Build(),
+                new ObjectMock3());
+        }
         private object OnAssigning(AssignedProperty arg)
         {
             if (arg.PropertyName == "prop1")
