@@ -69,6 +69,7 @@
   <ItemGroup>
     <Compile Include="Mocks\ObjectMock.cs" />
     <Compile Include="Mocks\ObjectMock2.cs" />
+    <Compile Include="Mocks\ObjectMock3.cs" />
     <Compile Include="TestMapping.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
   </ItemGroup>

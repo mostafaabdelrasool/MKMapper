@@ -63,13 +63,17 @@ namespace MKMapper
                     if (sourceProp.PropertyType.IsInterface ||
                     (sourceProp.PropertyType.IsGenericType &&
                      sourceProp.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
+                     && destProp.PropertyType.IsInterface ||
+                    (destProp.PropertyType.IsGenericType &&
+                     destProp.PropertyType.GetGenericTypeDefinition() == typeof(List<>))
                     && SourceValues != null && MapCollection)
                     {
                         data = EnumerableAssign(DesitnationObject, destProp, data, sourceType, sourceProp, SourceValues);
                     }
                     //check if source property is object
                     else if (sourceProp.PropertyType.IsClass &&
-                        !sourceProp.PropertyType.Name.Contains("String") && SourceValues != null && MapCollection)
+                        !sourceProp.PropertyType.Name.Contains("String") && SourceValues != null
+                        && destProp.PropertyType.IsClass && !destProp.PropertyType.Name.Contains("String") && MapCollection)
                     {
                         data = ObjectAssing(DesitnationObject, destProp, data, sourceType, sourceProp, SourceValues);
                     }
