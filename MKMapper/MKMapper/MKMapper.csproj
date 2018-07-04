@@ -46,6 +46,7 @@
     <Compile Include="LamdaExtractor.cs" />
     <Compile Include="MapProperties.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
+    <Compile Include="PropertyExtention.cs" />
     <Compile Include="TypeChecking.cs" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
