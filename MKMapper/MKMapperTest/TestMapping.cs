@@ -33,6 +33,20 @@ namespace MKMapperTest
             var xx = map.Map<ObjectMock, ObjectMock3>(Builder<ObjectMock>.CreateNew().Build(),
                 new ObjectMock3());
         }
+        [TestMethod]
+        public void TestChildExclude()
+        {
+            MapProperties map = new MapProperties();
+            var mock = Builder<ObjectMock>.CreateNew().Build();
+            mock.prop4 = new Mocks.ObjectMock2();
+            mock.prop4.exludeProp = "ssss";
+           var result = map.Map<ObjectMock, ObjectMock3>(mock,
+                new ObjectMock3(),new List<string> { "exludeProp" });
+            if (!string.IsNullOrWhiteSpace(result.prop4.exludeProp))
+            {
+                Assert.Fail();
+            }
+        }
         private object OnAssigning(AssignedProperty arg)
         {
             if (arg.PropertyName == "prop1")

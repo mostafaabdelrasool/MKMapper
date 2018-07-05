@@ -24,6 +24,7 @@ namespace MKMapper
             {
                 return DesitnationObject;
             }
+            this.excludes = excludes ?? new List<string>();
             Type destType = DesitnationObject.GetType();
             MappingPath.Clear();
             if (SourceObject is IEnumerable && DesitnationObject is IEnumerable)
@@ -32,22 +33,20 @@ namespace MKMapper
                 {
                     destType.GetMethod("Add").Invoke(DesitnationObject,
                         new[] { GetProperties(item, InstanceCreator.CreateObjectInstance(
-                            destType.GetProperties()[2]), excludes) });
+                            destType.GetProperties()[2])) });
                     MappingPath.Clear();
                 }
             }
             else
             {
-                GetProperties(SourceObject, DesitnationObject, excludes);
+                GetProperties(SourceObject, DesitnationObject);
             }
             return DesitnationObject;
         }
 
-        private object GetProperties(object SourceObject, object DesitnationObject, List<string> excludes = null)
+        private object GetProperties(object SourceObject, object DesitnationObject)
         {
             object data = null; Type sourceType = SourceObject.GetType();
-            excludes = excludes == null ? new List<string>() : excludes;
-
             DesitnationObject.GetType().GetProperties().Where(x => !excludes.Contains(x.Name.ToLower()))
                 .ToList().ForEach(destProp =>
             {
@@ -165,6 +164,8 @@ namespace MKMapper
 
         public bool MapCollection { get; set; }
         private Dictionary<Type, List<string>> MappingPath = new Dictionary<Type, List<string>>();
+        private List<string> excludes;
+
         public Func<AssignedProperty, object> OnAssigning { get; set; }
     }
 

@@ -8,6 +8,7 @@ namespace MKMapperTest.Mocks
 {
     public class ObjectMock2
     {
+        public string exludeProp;
         public int prop1 { get; set; }
         public string prop2 { get; set; }
         public DateTime prop3 { get; set; }

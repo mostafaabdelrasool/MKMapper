@@ -12,7 +12,8 @@ namespace MKMapperTest.Mocks
         public string prop2 { get; set; }
         public DateTime prop3 { get; set; }
 
-        public string prop4 { get; set; }
+        public ObjectMock2 prop4 { get; set; }
         public List<ObjectMock2> prop5 { get; set; }
+
     }
 }
