@@ -86,7 +86,8 @@ namespace MKMapper
                             SourceName = sourceProp.Name,
                             PropertyName = destProp.Name,
                             PropertyType = destProp.PropertyType,
-                            SourceValue = SourceValues
+                            SourceValue = SourceValues,
+                            sourceObject=SourceObject
                         }) : null;
                         if (val != null)
                         {
